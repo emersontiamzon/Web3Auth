@@ -12,114 +12,102 @@ node_modules
 .pnp
 .pnp.js
 
-# Build files
+# Build output
 dist
 dist-ssr
-build/
-.next/
-out/
-
-# Cache
-.cache/
-.parcel-cache/
-
-# Environment variables
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Misc
-.DS_Store
-*.pem
-*.local
-
-# Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Testing
-coverage/
-
-# Production
 build
 
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
+# Environment variables
+.env
+.env.local
+.env.*.local
 
 # Visual Studio Code
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
 
 # Visual Studio
 .vs/
 *.user
 *.userosscache
 *.sln.docstates
-.vsconfig
+*.suo
 *.userprefs
-*.vspscc
-*.vssscc
-*_i.c
-*_p.c
-*_h.h
-*.ilk
-*.meta
-*.obj
-*.pch
-*.pdb
-*.pgc
-*.pgd
-*.rsp
-*.sbr
-*.tlb
-*.tli
-*.tlh
-*.tmp
-*.tmp_proj
-*.log
-*.vspscc
-*.vssscc
-.builds
-*.pidb
-*.svclog
-*.scc
+*.dbmdl
+*.jfm
+*.pfx
+*.publishsettings
+*.ncrunchsolution
+*.ncrunchproject
+*.ncrunchproject.*
+*.DotSettings.user
+_ReSharper*/
+*.sln.ide/
+*.sw?
 
-# Visual C++ cache files
-ipch/
-*.aps
-*.ncb
-*.opendb
-*.opensdf
-*.sdf
-*.cachefile
-*.VC.db
-*.VC.VC.opendb
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio 2015/2017/2019/2022 cache/options directory
+.vs/
+
+# Visual Studio 2017 auto generated files
+Generated\ Files/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# Vite
+.cache/
+*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+/vite.config.ts.timestamp-1749787373462-b4916210c53ca.mjs
+/vite.config.ts.timestamp-1749788169311-4589bd8512097.mjs
+/vite.config.ts.timestamp-1749794867885-8a84a06f6aa06.mjs
+/vite.config.ts.timestamp-1750052600431-5c74dde18e1de.mjs
+/vite.config.ts.timestamp-1750130604323-3a2beb24c28a7.mjs

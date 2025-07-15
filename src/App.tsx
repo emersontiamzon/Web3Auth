@@ -38,7 +38,7 @@ function App() {
             </div>
             <SendTransaction />
             <Balance />
-            <SwitchChain />
+           {/* <SwitchChain />*/}
         </div>
     );
 

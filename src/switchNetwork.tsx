@@ -1,3 +1,4 @@
+/*
 import { useChainId, useSwitchChain } from 'wagmi'
 
 export function SwitchChain() {
@@ -23,4 +24,4 @@ export function SwitchChain() {
             {error?.message}
         </div>
     )
-}
+}*/

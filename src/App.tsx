@@ -3,6 +3,15 @@ import { useWeb3AuthConnect, useWeb3AuthDisconnect, useWeb3AuthUser } from "@web
 import { useAccount } from "wagmi";
 import { SendTransaction } from "./components/sendTransaction";
 import { Balance } from "./components/getBalance";
+import './App.css'
+// src/App.tsx
+import React from "react";
+import TransakButton from "./components/TransakButton";
+
+const TRANSAK_URL = "https://global.transak.com/?apiKey=02624956-010b-4775-8e31-7b9c8b82df76&cryptoCurrencyCode=USDC&network=polygon&defaultCryptoAmount=1000&fiatCurrency=USD&productsAvailed=SELL"; // Replace with your actual URL
+
+
+
 import { SwitchChain } from "./components/switchNetwork";
 function App() {
     const { connect, isConnected, connectorName, loading: connectLoading, error: connectError } = useWeb3AuthConnect();
@@ -36,8 +45,11 @@ function App() {
                     {disconnectError && <div className="error">{disconnectError.message}</div>}
                 </div>
             </div>
-            <SendTransaction />
-            <Balance />
+        {/*    <SendTransaction />
+            <Balance />*/}
+
+            <TransakButton isBuyMode={true} /> {/* Buy */}
+            <TransakButton isBuyMode={false} /> {/* Sell */}
            {/* <SwitchChain />*/}
         </div>
     );
@@ -66,7 +78,6 @@ function App() {
             <div id="console" style={{ whiteSpace: "pre-line" }}>
                 <p style={{ whiteSpace: "pre-line" }}></p>
             </div>
-
             <footer className="footer">
                 <a
                     href="https://github.com/Web3Auth/web3auth-pnp-examples/tree/main/web-modal-sdk/quick-starts/react-modal-quick-start"

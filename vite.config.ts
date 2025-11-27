@@ -1,10 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+// vite.config.ts 
+
+ 
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/',
   // alias are only to be added when absolutely necessary, these modules are already present in the browser environment
   // resolve: {
   // alias: {
@@ -20,4 +24,6 @@ export default defineConfig({
   define: {
     global: "globalThis",
   },
+  
+  
 });

@@ -1,78 +1,115 @@
 // src/components/TransakButton.tsx
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { Transak } from "@transak/transak-sdk";
-       
-// Extend the Window interface to include the transak property
+
 declare global {
     interface Window {
+        Transak: any;
         transak: any;
     }
 }
 
 interface TransakButtonProps {
-    isBuyMode?: boolean; // true = buy, false = sell
+    isBuyMode?: boolean;
 }
 
 const TransakButton: React.FC<TransakButtonProps> = ({ isBuyMode = true }) => {
-    const openTransakWidget = () => {
-        const config: any = {
-            apiKey: import.meta.env.VITE_TRANSAK_API_KEY || "", // Load from environment variables
-            environment: Transak.ENVIRONMENTS.STAGING,
-            hostURL: window.location.href,
+    const transakRef = useRef<any>(null);
+
+    const initTransak = useCallback(() => {
+        // Close any existing instance
+        if (window.transak) {
+            window.transak.close();
+            window.transak = null;
+        }
+
+        const config = {
+            apiKey: import.meta.env.VITE_TRANSAK_API_KEY || "",
+            environment: 'STAGING',
+            hostURL: window.location.origin,
             widgetHeight: "600px",
             widgetWidth: "600px",
             themeColor: "000000",
             defaultCryptoCurrency: "USDT",
             fiatCurrency: "USD",
-            isBuyCrypto: false, // true = BUY, false = SELL
-
-            // Common configuration for both buy and sell
+            isBuyCrypto: isBuyMode,
             network: "ethereum",
             cryptoCurrencyList: 'USDT,ETH',
             defaultNetwork: 'ethereum',
-
-            // Email and user identification
-            email: '', // Can be pre-filled or left empty for user to enter
-            redirectURL: window.location.origin,//window.location.href,
-            hideMenu: false,
+            redirectURL: window.location.origin,
         };
 
         if (isBuyMode) {
-            // Buy configuration
-            config.walletAddress = "0xFE9891511e79d71eC629A0F629F3cF0d0E5e14fD"; // User's wallet for receiving crypto
+            config.walletAddress = "0xFE9891511e79d71eC629A0F629F3cF0d0E5e14fD";
         } else {
-            // Sell configuration
-            config.defaultCryptoAmount = 100; // Default amount to sell (in USD equivalent)
-            config.isAutoFillUserData = false; // Let user enter their bank details
+            config.defaultCryptoAmount = 100;
+            config.isAutoFillUserData = false;
         }
 
+        // Create new Transak instance
         const transak = new Transak(config);
+        transakRef.current = transak;
+        window.transak = transak;
 
+        // Initialize the widget
         transak.init();
 
-        // Event handlers
-      /*  transak.on(Transak.EVENTS.TRANSAK_WIDGET_CLOSE, () => {
-            console.log("Transak widget closed");
-            transak.close();
-        });
+        // Event handlers using window event listeners
+        const handleEvent = (event: any) => {
+            const { eventName, data } = event.detail || {};
+            
+            switch (eventName) {
+                case 'TRANSAK_WIDGET_CLOSE':
+                    console.log("Transak widget closed");
+                    transakRef.current = null;
+                    transak.close();
+                    break;
+                case 'TRANSAK_ORDER_SUCCESSFUL':
+                    console.log("Order successful:", data);
+                    transak.close();
+                    break;
+                case 'TRANSAK_ORDER_FAILED':
+                    console.error("Order failed:", data);
+                    break;
+                case 'TRANSAK_ERROR':
+                    console.error("Transak error:", data);
+                    transak.close();
+                    break;
+                default:
+                    console.log("Unhandled event:", eventName, data);
+            }
+        };
 
-        transak.on(Transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData: any) => {
-            console.log("Order successful:", orderData);
-            transak.close();
-        });
+        window.addEventListener('TRANSAK_EVENTS', handleEvent);
 
-        transak.on(Transak.EVENTS.TRANSAK_ORDER_FAILED, (orderData: any) => {
-            console.error("Order failed:", orderData);
-        });
+        // Cleanup function
+        return () => {
+            window.removeEventListener('TRANSAK_EVENTS', handleEvent);
+        };
+    }, [isBuyMode]);
 
-        transak.on(Transak.EVENTS.TRANSAK_ERROR, (error: any) => {
-            console.error("Transak error:", error);
-        });*/
-    };
+    const handleButtonClick = useCallback(() => {
+        if (transakRef.current) {
+            transakRef.current.close();
+            transakRef.current = null;
+        } else {
+            initTransak();
+        }
+    }, [initTransak]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (transakRef.current) {
+                transakRef.current.close();
+                transakRef.current = null;
+            }
+        };
+    }, []);
 
     return (
         <button
-            onClick={openTransakWidget}
+            onClick={handleButtonClick}
             style={{
                 padding: "10px 20px",
                 margin: "10px",
@@ -85,6 +122,7 @@ const TransakButton: React.FC<TransakButtonProps> = ({ isBuyMode = true }) => {
             }}
         >
             {isBuyMode ? "Buy Crypto (On-Ramp)" : "Sell Crypto (Off-Ramp)"}
+            {transakRef.current ? " (Click to close)" : ""}
         </button>
     );
 };

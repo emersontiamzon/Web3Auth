@@ -24,7 +24,7 @@ const web3AuthContextConfig: Web3AuthContextConfig = {
           loginMethods: {
             google: {
               name: "google login",
-              authConnectionId: "google-et",
+              authConnectionId: "coinexchange-google",
             },
           },
         },

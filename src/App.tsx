@@ -1,91 +1,114 @@
-import "./App.css";
+// src/App.tsx
+import React, { useState } from "react";
 import { useWeb3AuthConnect, useWeb3AuthDisconnect, useWeb3AuthUser } from "@web3auth/modal/react";
 import { useAccount } from "wagmi";
-import { SendTransaction } from "./components/sendTransaction";
-import { Balance } from "./components/getBalance";
-import './App.css'
-// src/App.tsx
-import React from "react";
 import TransakButton from "./components/TransakButton";
+import "./App.css";
 
-const TRANSAK_URL = "https://global.transak.com/?apiKey=02624956-010b-4775-8e31-7b9c8b82df76&cryptoCurrencyCode=USDC&network=polygon&defaultCryptoAmount=1000&fiatCurrency=USD&productsAvailed=SELL"; // Replace with your actual URL
-
-
-
-import { SwitchChain } from "./components/switchNetwork";
 function App() {
     const { connect, isConnected, connectorName, loading: connectLoading, error: connectError } = useWeb3AuthConnect();
     const { disconnect, loading: disconnectLoading, error: disconnectError } = useWeb3AuthDisconnect();
     const { userInfo } = useWeb3AuthUser();
     const { address } = useAccount();
+    const [transakError, setTransakError] = useState<string>("");
 
-    function uiConsole(...args: any[]): void {
-        const el = document.querySelector("#console>p");
-        if (el) {
-            el.innerHTML = JSON.stringify(args || {}, null, 2);
-            console.log(...args);
-        }
-    }
+    const handleTransakError = (error: any) => {
+        setTransakError(error.message || "An error occurred with Transak.");
+    };
 
-    const loggedInView = (
-        <div className="grid">
-            <h2>Connected to {connectorName}</h2>
-            <div>{address}</div>
-            <div className="flex-container">
-                <div>
-                    <button onClick={() => uiConsole(userInfo)} className="card">
-                        Get User Info
-                    </button>
-                </div>
-                <div>
-                    <button onClick={() => disconnect()} className="card">
-                        Log Out
-                    </button>
-                    {disconnectLoading && <div className="loading">Disconnecting...</div>}
-                    {disconnectError && <div className="error">{disconnectError.message}</div>}
-                </div>
+    const ErrorDisplay = ({ message }: { message?: string }) => {
+        if (!message) return null;
+        return <div className="error-banner">{message}</div>;
+    };
+
+    const Header = () => (
+        <header className="header">
+            <div className="logo">
+                <a href="/">CoinExchange.Cash</a>
             </div>
-        {/*    <SendTransaction />
-            <Balance />*/}
-
-            <TransakButton isBuyMode={true} /> {/* Buy */}
-            <TransakButton isBuyMode={false} /> {/* Sell */}
-           {/* <SwitchChain />*/}
-        </div>
+            <div className="wallet-actions">
+                {connectLoading || disconnectLoading ? (
+                    <div className="loading-spinner"></div>
+                ) : isConnected ? (
+                    <button onClick={() => disconnect()} className="btn btn-secondary">
+                        Disconnect
+                    </button>
+                ) : (
+                    <button onClick={() => connect()} className="btn btn-primary">
+                        Connect Wallet
+                    </button>
+                )}
+            </div>
+        </header>
     );
 
-    const unloggedInView = (
-        <div className="grid">
-            <button onClick={() => connect()} className="card">
-                Login
-            </button>
-            {connectLoading && <div className="loading">Connecting...</div>}
-            {connectError && <div className="error">{connectError.message}</div>}
-        </div>
+    const Hero = () => (
+        <section className="hero">
+            <div className="hero-content">
+                <h1 className="hero-title">The Future of Digital Wallets is Here</h1>
+                <p className="hero-subtitle">A seamless and secure way to interact with the decentralized web.</p>
+                {!isConnected && (
+                    <button onClick={() => connect()} className="btn btn-primary btn-large">
+                        Get Started Now
+                    </button>
+                )}
+            </div>
+        </section>
+    );
 
+    const Features = () => (
+        <section className="features">
+            <h2 className="section-title">Why Choose CoinExchange.Cash?</h2>
+            <div className="feature-cards">
+                <div className="feature-card">
+                    <h3>Easy On-Ramp</h3>
+                    <p>Buy crypto directly with your credit card using our trusted partner, Transak.</p>
+                </div>
+                <div className="feature-card">
+                    <h3>Best-in-Class Security</h3>
+                    <p>Your assets are protected with the power of Web3Auth's non-custodial MPC wallets.</p>
+                </div>
+                <div className="feature-card">
+                    <h3>Multi-Chain Ready</h3>
+                    <p>Access a wide range of decentralized applications across multiple blockchains.</p>
+                </div>
+            </div>
+        </section>
+    );
+
+    const Dashboard = () => (
+        <section className="dashboard">
+            <h2 className="section-title">Your Dashboard</h2>
+            <div className="dashboard-content">
+                <div className="wallet-info">
+                    <p><strong>Status:</strong> Connected to {connectorName}</p>
+                    <p><strong>Address:</strong> {address}</p>
+                    {userInfo && <p><strong>Name:</strong> {userInfo.name}</p>}
+                </div>
+                <div className="dashboard-actions">
+                    <TransakButton isBuyMode={true} walletAddress={address as string} onError={handleTransakError} />
+                    <TransakButton isBuyMode={false} walletAddress={address as string} onError={handleTransakError} />
+                </div>
+            </div>
+        </section>
     );
 
     return (
-        <div className="container">
-            <h1 className="title">
-                <a target="_blank" href="https://web3auth.io/docs/sdk/pnp/web/modal" rel="noreferrer">
-                    Web3Auth{" "}
-                </a>
-                & React Modal Quick Start
-            </h1>
-
-            {isConnected ? loggedInView : unloggedInView}
-            <div id="console" style={{ whiteSpace: "pre-line" }}>
-                <p style={{ whiteSpace: "pre-line" }}></p>
-            </div>
+        <div className="app-container">
+            <Header />
+            <main>
+                <ErrorDisplay message={connectError?.message || disconnectError?.message || transakError} />
+                {isConnected ? (
+                    <Dashboard />
+                ) : (
+                    <>
+                        <Hero />
+                        <Features />
+                    </>
+                )}
+            </main>
             <footer className="footer">
-                <a
-                    href="https://github.com/Web3Auth/web3auth-pnp-examples/tree/main/web-modal-sdk/quick-starts/react-modal-quick-start"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Source code
-                </a>
+                <p>&copy; 2025 CoinExchange.Cash. All rights reserved.</p>
             </footer>
         </div>
     );

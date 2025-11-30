@@ -1,5 +1,5 @@
 // src/components/TransakButton.tsx
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Transak } from "@transak/transak-sdk";
 
 declare global {
@@ -11,19 +11,20 @@ declare global {
 
 interface TransakButtonProps {
     isBuyMode?: boolean;
+    walletAddress?: string;
+    onError?: (error: any) => void;
 }
 
-const TransakButton: React.FC<TransakButtonProps> = ({ isBuyMode = true }) => {
-    const transakRef = useRef<any>(null);
+const TransakButton: React.FC<TransakButtonProps> = ({ isBuyMode = true, walletAddress = "", onError }) => {
+    const [isWidgetOpen, setIsWidgetOpen] = useState(false);
 
     const initTransak = useCallback(() => {
-        // Close any existing instance
         if (window.transak) {
             window.transak.close();
             window.transak = null;
         }
 
-        const config = {
+        const config: any = {
             apiKey: import.meta.env.VITE_TRANSAK_API_KEY || "",
             environment: 'STAGING',
             hostURL: window.location.origin,
@@ -40,39 +41,39 @@ const TransakButton: React.FC<TransakButtonProps> = ({ isBuyMode = true }) => {
         };
 
         if (isBuyMode) {
-            config.walletAddress = "0xFE9891511e79d71eC629A0F629F3cF0d0E5e14fD";
+            config.walletAddress = walletAddress;
         } else {
             config.defaultCryptoAmount = 100;
             config.isAutoFillUserData = false;
         }
 
-        // Create new Transak instance
         const transak = new Transak(config);
-        transakRef.current = transak;
         window.transak = transak;
-
-        // Initialize the widget
         transak.init();
+        setIsWidgetOpen(true);
 
-        // Event handlers using window event listeners
         const handleEvent = (event: any) => {
             const { eventName, data } = event.detail || {};
-            
+
             switch (eventName) {
                 case 'TRANSAK_WIDGET_CLOSE':
                     console.log("Transak widget closed");
-                    transakRef.current = null;
+                    setIsWidgetOpen(false);
                     transak.close();
                     break;
                 case 'TRANSAK_ORDER_SUCCESSFUL':
                     console.log("Order successful:", data);
+                    setIsWidgetOpen(false);
                     transak.close();
                     break;
                 case 'TRANSAK_ORDER_FAILED':
                     console.error("Order failed:", data);
+                    if (onError) onError(data);
                     break;
                 case 'TRANSAK_ERROR':
                     console.error("Transak error:", data);
+                    if (onError) onError(data);
+                    setIsWidgetOpen(false);
                     transak.close();
                     break;
                 default:
@@ -82,27 +83,26 @@ const TransakButton: React.FC<TransakButtonProps> = ({ isBuyMode = true }) => {
 
         window.addEventListener('TRANSAK_EVENTS', handleEvent);
 
-        // Cleanup function
         return () => {
             window.removeEventListener('TRANSAK_EVENTS', handleEvent);
         };
-    }, [isBuyMode]);
+    }, [isBuyMode, walletAddress, onError]);
 
     const handleButtonClick = useCallback(() => {
-        if (transakRef.current) {
-            transakRef.current.close();
-            transakRef.current = null;
+        if (isWidgetOpen) {
+            if (window.transak) {
+                window.transak.close();
+            }
+            setIsWidgetOpen(false);
         } else {
             initTransak();
         }
-    }, [initTransak]);
+    }, [isWidgetOpen, initTransak]);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (transakRef.current) {
-                transakRef.current.close();
-                transakRef.current = null;
+            if (window.transak) {
+                window.transak.close();
             }
         };
     }, []);
@@ -110,19 +110,10 @@ const TransakButton: React.FC<TransakButtonProps> = ({ isBuyMode = true }) => {
     return (
         <button
             onClick={handleButtonClick}
-            style={{
-                padding: "10px 20px",
-                margin: "10px",
-                fontSize: "16px",
-                backgroundColor: isBuyMode ? "#00bcd4" : "#ff5722",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-            }}
+            className={`transak-button ${isBuyMode ? "buy" : "sell"}`}
         >
             {isBuyMode ? "Buy Crypto (On-Ramp)" : "Sell Crypto (Off-Ramp)"}
-            {transakRef.current ? " (Click to close)" : ""}
+            {isWidgetOpen ? " (Click to close)" : ""}
         </button>
     );
 };

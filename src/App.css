@@ -12,6 +12,7 @@
   --border-radius: 8px;
   --shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --success-color: #28a745;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -131,6 +132,7 @@ main {
   font-size: 36px;
   font-weight: 600;
   margin-bottom: 48px;
+  text-align: center;
 }
 
 .feature-cards {
@@ -159,27 +161,94 @@ main {
 }
 
 /* Dashboard */
-.dashboard {
-  padding: 40px;
-  background-color: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 48px;
 }
 
-.dashboard-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.wallet-info {
-  font-size: 16px;
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.dashboard-card {
+    background-color: var(--card-background);
+    padding: 32px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.dashboard-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 24px;
 }
 
 .wallet-info p {
-  margin-bottom: 8px;
-  word-break: break-all;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--success-color);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.address-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 8px;
+}
+
+.address-label {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.address-text {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: monospace;
+}
+
+.btn-copy {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    color: var(--text-light);
+}
+
+.btn-copy:hover {
+    color: var(--primary-color);
 }
 
 .dashboard-actions {
@@ -187,10 +256,10 @@ main {
   gap: 16px;
 }
 
-/* Transak Button Styles (from previous step, but now integrated) */
+/* Transak Button Styles */
 .transak-button {
     padding: 10px 20px;
-    margin: 0; /* Reset margin */
+    margin: 0;
     font-size: 16px;
     color: white;
     border: none;
@@ -198,6 +267,7 @@ main {
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s ease-in-out;
+    flex-grow: 1;
 }
 
 .transak-button.buy {
@@ -250,11 +320,6 @@ main {
   color: var(--text-light);
 }
 
-.footer a {
-  color: var(--primary-color);
-  text-decoration: none;
-}
-
-.footer a:hover {
-  text-decoration: underline;
+.footer p {
+  margin: 0;
 }

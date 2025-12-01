@@ -76,22 +76,58 @@ function App() {
         </section>
     );
 
-    const Dashboard = () => (
-        <section className="dashboard">
-            <h2 className="section-title">Your Dashboard</h2>
-            <div className="dashboard-content">
-                <div className="wallet-info">
-                    <p><strong>Status:</strong> Connected to {connectorName}</p>
-                    <p><strong>Address:</strong> {address}</p>
-                    {userInfo && <p><strong>Name:</strong> {userInfo.name}</p>}
+    const Dashboard = () => {
+        const [copySuccess, setCopySuccess] = useState('');
+
+        const copyToClipboard = () => {
+            if (address) {
+                navigator.clipboard.writeText(address);
+                setCopySuccess('Copied!');
+                setTimeout(() => setCopySuccess(''), 2000);
+            }
+        };
+
+        return (
+            <section className="dashboard">
+                <div className="dashboard-header">
+                    <h2 className="section-title">Your Dashboard</h2>
+                    <div className="user-profile">
+                        {userInfo?.profileImage && <img src={userInfo.profileImage} alt="Profile" className="profile-image" />}
+                        <span>{userInfo?.name || 'User'}</span>
+                    </div>
                 </div>
-                <div className="dashboard-actions">
-                    <TransakButton isBuyMode={true} walletAddress={address as string} onError={handleTransakError} />
-                    <TransakButton isBuyMode={false} walletAddress={address as string} onError={handleTransakError} />
+
+                <div className="dashboard-grid">
+                    <div className="dashboard-card wallet-details-card">
+                        <h3>Wallet Details</h3>
+                        <div className="wallet-info">
+                            <p><strong>Status:</strong> <span className="status-dot"></span> Connected</p>
+                            <p><strong>Connector:</strong> {connectorName}</p>
+                            <div className="address-bar">
+                                <span className="address-label">Address:</span>
+                                <span className="address-text">{address}</span>
+                                <button onClick={copyToClipboard} className="btn-copy">
+                                    {copySuccess || (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="dashboard-card actions-card">
+                        <h3>Quick Actions</h3>
+                        <div className="dashboard-actions">
+                            <TransakButton isBuyMode={true} walletAddress={address as string} onError={handleTransakError} />
+                            <TransakButton isBuyMode={false} walletAddress={address as string} onError={handleTransakError} />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
-    );
+            </section>
+        );
+    };
 
     return (
         <div className="app-container">
